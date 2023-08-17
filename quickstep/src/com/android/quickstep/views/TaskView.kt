@@ -1490,11 +1490,22 @@ constructor(
     }
 
     protected open fun updateCurrentFullscreenParams() {
-        updateFullscreenParams(currentFullscreenParams)
+        updateFullscreenParams(currentFullscreenParams, false /* isSplitScreen */)
+    }
+
+    protected open fun updateCurrentFullscreenParams(isSplitScreen: Boolean) {
+        updateFullscreenParams(currentFullscreenParams, isSplitScreen)
     }
 
     protected fun updateFullscreenParams(fullscreenParams: FullscreenDrawParams) {
-        recentsView?.let { fullscreenParams.setProgress(fullscreenProgress, it.scaleX, scaleX) }
+        updateFullscreenParams(fullscreenParams, false /* isSplitScreen */)
+    }
+
+    protected fun updateFullscreenParams(fullscreenParams: FullscreenDrawParams,
+            isSplitScreen: Boolean) {
+        recentsView?.let {
+            fullscreenParams.setProgress(fullscreenProgress, it.scaleX, scaleX, isSplitScreen)
+        }
     }
 
     protected open fun getThumbnailFullscreenParams(): FullscreenDrawParams =
@@ -1559,6 +1570,7 @@ constructor(
         var cornerRadius = 0f
         private var windowCornerRadius = 0f
         var currentDrawnCornerRadius = 0f
+        private var prevProgress = 0f
 
         init {
             updateCornerRadius(context)
@@ -1594,11 +1606,16 @@ constructor(
         }
 
         /** Sets the progress in range [0, 1] */
-        fun setProgress(fullscreenProgress: Float, parentScale: Float, taskViewScale: Float) {
+        fun setProgress(fullscreenProgress: Float, parentScale: Float, taskViewScale: Float,
+                isSplitScreen: Boolean) {
+            // Remove the rounded corners only in the splitted task. (i.e split screen)
+            val maxCornerRadius = if (isSplitScreen && (prevProgress <= fullscreenProgress))
+                    0f else windowCornerRadius
             currentDrawnCornerRadius =
-                Utilities.mapRange(fullscreenProgress, cornerRadius, windowCornerRadius) /
+                Utilities.mapRange(fullscreenProgress, cornerRadius, maxCornerRadius) /
                     parentScale /
                     taskViewScale
+            prevProgress = fullscreenProgress
         }
 
         override fun close() {}
