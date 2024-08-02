@@ -42,6 +42,14 @@
         android:summary="@string/suggestion_pref_screen_desc">
         <intent android:action="android.settings.ACTION_CONTENT_SUGGESTIONS_SETTINGS" />
     </androidx.preference.PreferenceScreen>
+    
+    <SwitchPreferenceCompat
+        android:key="pref_allow_cts"
+        android:title="@string/pref_allow_cts_title"
+        android:summary="@string/pref_allow_cts_summary"
+        android:defaultValue="@*android:bool/config_searchAllEntrypointsEnabledDefault"
+        launcher:iconSpaceReserved="false" />
+
 
      <com.android.launcher3.settings.preferences.CustomSeekBarPreference
         android:key="pref_blur_depth"
